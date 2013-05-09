@@ -1,8 +1,6 @@
 package thu.cs.lyw.rm.evaluation;
 
-import java.util.Iterator;
 import thu.cs.lyw.rm.manager.RTask;
-import thu.cs.lyw.rm.util.ProviderType;
 import thu.cs.lyw.rm.util.Strategy;
 
 public class REvaluator {
