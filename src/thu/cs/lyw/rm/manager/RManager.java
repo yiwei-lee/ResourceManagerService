@@ -8,7 +8,6 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Scanner;
 import java.util.Set;
-
 import thu.cs.lyw.rm.evaluation.REvaluation;
 import thu.cs.lyw.rm.evaluation.REvaluator;
 import thu.cs.lyw.rm.resource.RNode;
@@ -21,15 +20,13 @@ import thu.cs.lyw.rm.util.Strategy;
 @SuppressWarnings("unused")
 public class RManager {
 	private RPool resourcePool;
-	private int userId;
 	private HashMap<ProviderType, ArrayList<Provider>> providerMap;
 	private PriorityQueue<RTask> taskQueue;
 	private HashMap<RTask, RNode> taskMap;
 	private REvaluator evaluator;
 	private Strategy strategy;
 	
-	public RManager(int id){
-		userId = id;
+	public RManager(){
 		resourcePool = new RPool();
 		providerMap = new HashMap<ProviderType, ArrayList<Provider>>();
 		taskQueue = new PriorityQueue<RTask>();

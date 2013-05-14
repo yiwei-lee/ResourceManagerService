@@ -26,17 +26,17 @@ public class RManagerServiceTest {
 		Gson gson = new Gson();
 		System.out.println(gson.toJson(ec2Provider));
 		System.out.println(gson.toJson(openStackProvider));
-//		webResource = client.resource("http://localhost/resource_manager/provider");
-//		JSONObject json;
-//		try {
-//			json = new JSONObject().append("type", "EC2").
-//					append("username", "lywthu").
-//					append("password", "liyiwei!@#900614");
-//			ClientResponse response = webResource.type("application/json").accept("application/json")
-//					.post(ClientResponse.class, json);
-//			json = response.getEntity(JSONObject.class);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
+		webResource = client.resource("http://localhost/resource_manager/provider");
+		JSONObject json;
+		try {
+			json = new JSONObject().append("type", "EC2").
+					append("username", "lywthu").
+					append("password", "liyiwei!@#900614");
+			ClientResponse response = webResource.type("application/json").accept("application/json")
+					.post(ClientResponse.class, json);
+			json = response.getEntity(JSONObject.class);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 	}
 }

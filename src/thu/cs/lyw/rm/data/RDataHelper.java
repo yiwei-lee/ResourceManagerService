@@ -50,6 +50,7 @@ public class RDataHelper {
 			}
 		}
 	}
+	//General functions;
 	public static Connection getConnection(){
 		if (helper == null) helper = new RDataHelper();
 		try {
@@ -91,31 +92,28 @@ public class RDataHelper {
 			}
 		}
 	}
-	public static void insertJSONObject(String table, JSONObject json){
+	public static JSONObject toJson(Object object){
+		if (gson == null) gson = new Gson();
+		String json = gson.toJson(object);
 		try {
-			conn = getConnection();
-			pstmt = conn.prepareStatement("INSERT INTO " + table + "(Data) VALUE(?)");
-			pstmt.setObject(1, json.toString());
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			System.err.print("SQL Error : ");
+			return new JSONObject(json);
+		} catch (JSONException e) {
 			e.printStackTrace();
-		} finally {
-			try {
-				if (pstmt != null) pstmt.close();
-				if (conn != null) conn.close();
-			} catch (SQLException e){
-				System.err.print("SQL Error : ");
-				e.printStackTrace();
-			}
 		}
+		return null;
 	}
+	public static <T> T fromJson(String json, Class<T> classOfT){
+		if (gson == null) gson = new Gson();
+		T object = gson.fromJson(json, classOfT);
+		return object;
+	}
+	//Provider-specific functions;
 	public static void addProvider(int userId, JSONObject provider){
 		try {
 			conn = getConnection();
 			pstmt = conn.prepareStatement("insert into provider(UserId, Data) values(?, ?)");
-			pstmt.setObject(1, userId);
-			pstmt.setObject(2, provider.toString());
+			pstmt.setInt(1, userId);
+			pstmt.setString(2, provider.toString());
 			pstmt.executeUpdate();
 		} catch (SQLException e) {
 			System.err.print("SQL Error : ");
@@ -187,19 +185,5 @@ public class RDataHelper {
 		}
 		return json;
 	}
-	public static JSONObject toJson(Object object){
-		if (gson == null) gson = new Gson();
-		String json = gson.toJson(object);
-		try {
-			return new JSONObject(json);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-	public static <T> T fromJson(String json, Class<T> classOfT){
-		if (gson == null) gson = new Gson();
-		T object = gson.fromJson(json, classOfT);
-		return object;
-	}
+	//RNode-specific functions;
 }

@@ -8,6 +8,11 @@
       <param-name>com.sun.jersey.config.property.packages</param-name>
       <param-value>thu.cs.lyw.rm.service</param-value>
     </init-param>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <servlet>
+  	<servlet-name>Context Initializer</servlet-name>
+    <servlet-class>thu.cs.lyw.rm.service.RManagerServiceContext</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
