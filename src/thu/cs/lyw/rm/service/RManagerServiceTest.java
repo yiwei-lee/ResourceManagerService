@@ -2,6 +2,8 @@ package thu.cs.lyw.rm.service;
 
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
+
+import com.google.gson.Gson;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
@@ -21,17 +23,20 @@ public class RManagerServiceTest {
 		openStackProvider.addProperty("username", "lywthu");
 		openStackProvider.addProperty("password", "liyiwei!@#900614");
 		
-		webResource = client.resource("http://localhost/resource_manager/provider");
-		JSONObject json;
-		try {
-			json = new JSONObject().append("type", "EC2").
-					append("username", "lywthu").
-					append("password", "liyiwei!@#900614");
-			ClientResponse response = webResource.type("application/json").accept("application/json")
-					.post(ClientResponse.class, json);
-			json = response.getEntity(JSONObject.class);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+		Gson gson = new Gson();
+		System.out.println(gson.toJson(ec2Provider));
+		System.out.println(gson.toJson(openStackProvider));
+//		webResource = client.resource("http://localhost/resource_manager/provider");
+//		JSONObject json;
+//		try {
+//			json = new JSONObject().append("type", "EC2").
+//					append("username", "lywthu").
+//					append("password", "liyiwei!@#900614");
+//			ClientResponse response = webResource.type("application/json").accept("application/json")
+//					.post(ClientResponse.class, json);
+//			json = response.getEntity(JSONObject.class);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
 	}
 }
