@@ -20,7 +20,7 @@ public class RManagerService {
 	@Path("/provider/{uid}")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
-	public void addProvider(JSONObject provider, @PathParam("uid") int uid){
+	public void addProvider(JSONObject provider, @PathParam("uid") String uid){
 		RDataHelper.addProvider(uid, provider);
 	}
 	@Path("/provider/{uid}")
@@ -55,7 +55,7 @@ public class RManagerService {
 	public JSONObject createNode(JSONObject json, @PathParam("uid") String uid){
 		RManager manager = RManagerServiceContext.managerMap.get(uid);
 		if (manager == null){
-			return RDataHelper.toJson("No provider added for user with uid "+uid);
+			return RDataHelper.toJson("No provider added for user with user id "+uid);
 		}
 		RTask task = RDataHelper.fromJson(json.toString(), RTask.class);
 		RNode node = manager.getNode(task);

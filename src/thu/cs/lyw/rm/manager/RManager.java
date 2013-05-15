@@ -19,6 +19,7 @@ import thu.cs.lyw.rm.util.Strategy;
 
 @SuppressWarnings("unused")
 public class RManager {
+	private String uid;
 	private RPool resourcePool;
 	private HashMap<ProviderType, ArrayList<Provider>> providerMap;
 	private PriorityQueue<RTask> taskQueue;
@@ -26,7 +27,8 @@ public class RManager {
 	private REvaluator evaluator;
 	private Strategy strategy;
 	
-	public RManager(){
+	public RManager(String uid){
+		this.uid = uid;
 		resourcePool = new RPool();
 		providerMap = new HashMap<ProviderType, ArrayList<Provider>>();
 		taskQueue = new PriorityQueue<RTask>();

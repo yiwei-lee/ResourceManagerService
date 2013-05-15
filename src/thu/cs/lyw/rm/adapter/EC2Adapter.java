@@ -89,24 +89,12 @@ public class EC2Adapter extends RAdapter {
 		AmazonEC2 ec2 = (AmazonEC2)provider.getProperty("AmazonEC2");
 		RunInstancesResult runInstancesResult = ec2.runInstances(runInstancesRequest);
 		String instanceId = runInstancesResult.getReservation().getInstances().get(0).getInstanceId();
-		System.out.println("EC2 : Current state of the newly created instance is : 'pending'.\n" +
-				"EC2 : Waiting for it to become 'running'.");
 		DescribeInstanceStatusRequest discribeStatusRequest = new DescribeInstanceStatusRequest().withInstanceIds(instanceId);
 		DescribeInstanceStatusResult describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
-		while (describeStatusResult.getInstanceStatuses().size() == 0){
-			describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
-			try {
-				Thread.sleep(2500);
-			} catch (InterruptedException e) {
-				System.out.println("Who dares to interrupt me?");
-				e.printStackTrace();
-			}
-		}
-		DescribeInstancesRequest discribeInstanceRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
-		DescribeInstancesResult describeInstanceStatusResult = ec2.describeInstances(discribeInstanceRequest);
-		node.setIP(describeInstanceStatusResult.getReservations().get(0).getInstances().get(0).getPublicIpAddress());
+		System.out.println("EC2 : Current state of the newly created instance is : '" + 
+				describeStatusResult.getInstanceStatuses().get(0).getInstanceState().getName() + "'.");
+		node.setIP(null);
 		node.addProperty("instanceId", instanceId);
-		System.out.println("EC2 : Public IP of the newly created instance is : " + node.getIP() + ".");
 		return node;
 	}
 	@Override
@@ -117,5 +105,20 @@ public class EC2Adapter extends RAdapter {
 				withInstanceIds((String)node.getProperty("instanceId"));
 		ec2.terminateInstances(terminateInstancesRequest);
 		System.out.println("EC2 : Public IP of the newly terminated instance is : " + node.getIP() + ".");
+	}
+	@Override
+	public String checkStatus(RNode node) {
+		String status = "unknown";
+		AmazonEC2 ec2 = (AmazonEC2)node.getProvider().getProperty("AmazonEC2");
+		String instanceId = (String) node.getProperty("instanceId");
+		DescribeInstanceStatusRequest discribeStatusRequest = new DescribeInstanceStatusRequest().withInstanceIds(instanceId);
+		DescribeInstanceStatusResult describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
+		status = describeStatusResult.getInstanceStatuses().get(0).getInstanceState().getName();
+		if (status.equals("running")){
+			DescribeInstancesRequest discribeInstanceRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
+			DescribeInstancesResult describeInstanceStatusResult = ec2.describeInstances(discribeInstanceRequest);
+			node.setIP(describeInstanceStatusResult.getReservations().get(0).getInstances().get(0).getPublicIpAddress());
+		}
+		return status;
 	}
 }

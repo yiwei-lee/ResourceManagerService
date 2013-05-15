@@ -7,6 +7,7 @@ public class RNode {
 	private String IP;
 	private HashMap<String, Object> properties;
 	private Provider provider;
+	private String status;
 	public RNode(Provider provider){
 		this.provider = provider;
 		properties = new HashMap<String, Object>();
@@ -25,5 +26,11 @@ public class RNode {
 	}
 	public Object getProperty(String key){
 		return properties.get(key);
+	}
+	public String getStatus(){
+		return status;
+	}
+	public void setStatus(String status){
+		this.status = status;
 	}
 }

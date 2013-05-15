@@ -105,30 +105,26 @@ public class OpenStackAdapter extends RAdapter{
 			json = response.getEntity(JSONObject.class);
 			String serverId = json.getJSONObject("server").getString("id");
 			//Get IP;
-			System.out.print("OpenStack : Building server...");
-			while (!getServerStatus(token, header, serverId).equals("ACTIVE")){
-				Thread.sleep(2500);
-			}
-			System.out.println();
-			webResource = client.resource(header + "/servers/"+serverId+"/ips");
-			response = webResource.type("application/json").accept("application/json").header("X-Auth-Token", token)
-					.get(ClientResponse.class);
-			json = response.getEntity(JSONObject.class);
-			String ip;
-			ip = json.getJSONObject("addresses").getJSONArray("private").getJSONObject(1).getString("addr");
-			System.out.println("OpenStack : Public IP of the newly created instance is : " + ip + ".");
-			node.setIP(ip);
+			System.out.println("OpenStack : Building server.");
+//			while (!getServerStatus(token, header, serverId).equals("ACTIVE")){
+//				Thread.sleep(2500);
+//			}
+//			webResource = client.resource(header + "/servers/"+serverId+"/ips");
+//			response = webResource.type("application/json").accept("application/json").header("X-Auth-Token", token)
+//					.get(ClientResponse.class);
+//			json = response.getEntity(JSONObject.class);
+//			String ip;
+//			ip = json.getJSONObject("addresses").getJSONArray("private").getJSONObject(1).getString("addr");
+//			System.out.println("OpenStack : Public IP of the newly created instance is : " + ip + ".");
+//			node.setIP(ip);
 			node.addProperty("serverId", serverId);
 			return node;
 		} catch (JSONException e) {
 			System.err.println(provider.getProperty("token"));
 			e.printStackTrace();
-		} catch (InterruptedException e) {
-			e.printStackTrace();
 		}
 		return null;
 	}
-
 	@Override
 	public void releaseNodeFromProvider(RNode node) {
 		Provider provider = node.getProvider();
@@ -140,6 +136,29 @@ public class OpenStackAdapter extends RAdapter{
 				.delete(ClientResponse.class);
 		checkResponseCode(response, 204);
 		System.out.println("OpenStack : Public IP of the newly terminated instance is : " + node.getIP() + ".");
+	}
+	@Override
+	public String checkStatus(RNode node) {
+		// TODO Auto-generated method stub
+		String status = "unknown";
+		String token = (String) node.getProvider().getProperty("token");
+		String header = (String) node.getProvider().getProperty("header");
+		String serverId = (String) node.getProperty("serverId");
+		try {
+			status = getServerStatus(token, header, serverId);
+			if (status.equals("ACTIVE")){
+				webResource = client.resource(header + "/servers/"+serverId+"/ips");
+				ClientResponse response = webResource.type("application/json").accept("application/json").header("X-Auth-Token", token)
+						.get(ClientResponse.class);
+				JSONObject json = response.getEntity(JSONObject.class);
+				String ip;
+				ip = json.getJSONObject("addresses").getJSONArray("private").getJSONObject(1).getString("addr");
+				node.setIP(ip);
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return status;
 	}
 	public JSONArray listFlavors(Provider provider) throws JSONException{
 		String token = (String) provider.getProperty("token");

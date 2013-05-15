@@ -8,6 +8,7 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 
+import thu.cs.lyw.rm.manager.RTask;
 import thu.cs.lyw.rm.util.Provider;
 import thu.cs.lyw.rm.util.ProviderType;
 
@@ -26,6 +27,10 @@ public class RManagerServiceTest {
 		Gson gson = new Gson();
 		System.out.println(gson.toJson(ec2Provider));
 		System.out.println(gson.toJson(openStackProvider));
+		RTask task1 = new RTask(ProviderType.OpenStack, "84536", "MICRO");
+		RTask task2 = new RTask(ProviderType.EC2, "ami-56e6a404", "MICRO");
+		System.out.println(gson.toJson(task1));
+		System.out.println(gson.toJson(task2));
 		webResource = client.resource("http://localhost/resource_manager/provider");
 		JSONObject json;
 		try {

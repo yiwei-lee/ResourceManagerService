@@ -19,7 +19,7 @@ public class Test {
 		openStackProvider.addProperty("username", "lywthu");
 		openStackProvider.addProperty("password", "liyiwei!@#900614");
 		
-		RManager manager = new RManager();
+		RManager manager = new RManager("test-user");
 		manager.addProvider(ec2Provider);
 		manager.addProvider(openStackProvider);
 		

@@ -6,10 +6,13 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-
+import thu.cs.lyw.rm.manager.RManager;
+import thu.cs.lyw.rm.service.RManagerServiceContext;
+import thu.cs.lyw.rm.util.Provider;
 import com.google.gson.Gson;
 
 public class RDataHelper {
@@ -62,7 +65,7 @@ public class RDataHelper {
 		}
 		return null;
 	}
-	public static ResultSet executeQuery(String query){
+	private static ResultSet executeQuery(String query){
 		rs = null;
 		try {
 			conn = getConnection();
@@ -108,13 +111,16 @@ public class RDataHelper {
 		return object;
 	}
 	//Provider-specific functions;
-	public static void addProvider(int userId, JSONObject provider){
+	public static void addProvider(String uid, JSONObject provider){
 		try {
 			conn = getConnection();
 			pstmt = conn.prepareStatement("insert into provider(UserId, Data) values(?, ?)");
-			pstmt.setInt(1, userId);
+			pstmt.setString(1, uid);
 			pstmt.setString(2, provider.toString());
 			pstmt.executeUpdate();
+			RManager manager = RManagerServiceContext.managerMap.get(uid);
+			if (manager == null) manager = new RManager(uid);
+			manager.addProvider(gson.fromJson(provider.toString(), Provider.class));
 		} catch (SQLException e) {
 			System.err.print("SQL Error : ");
 			e.printStackTrace();
@@ -186,4 +192,67 @@ public class RDataHelper {
 		return json;
 	}
 	//RNode-specific functions;
+	public static JSONObject getNodes(String uid){
+		JSONObject json = null;
+		StringBuilder list = new StringBuilder();
+		list.append("[");
+		try {
+			rs = executeQuery("select data from node where UserId = " + uid);
+			while (rs.next()){
+				list.append(rs.getString(1)).append(",");
+			}
+			list.append("]");
+			json = new JSONObject().append("nodes", new JSONArray(list.toString()));
+		} catch (SQLException e) {
+			System.err.print("SQL Error : ");
+			e.printStackTrace();
+		} catch (JSONException e) {
+			System.err.print("JSON Error : ");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) conn.close();
+				if (stmt != null) stmt.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e){
+				System.err.print("SQL Error : ");
+				e.printStackTrace();
+			}
+		}
+		return json;
+	}
+	//Functions for initialization;
+	public static HashMap<String, RManager> loadUserData(){
+		HashMap<String, RManager> userData = new HashMap<String, RManager>();
+		String uid;
+		String provider;
+		RManager manager = null;
+		try {
+			rs = executeQuery("select * from provider");
+			while (rs.next()){
+				uid = rs.getString(2);
+				provider = rs.getString(3);
+				if ((manager = userData.get(uid)) == null){
+					manager = new RManager(uid);
+					manager.addProvider(gson.fromJson(provider, Provider.class));
+					userData.put(uid, manager);
+				} else {
+					manager.addProvider(gson.fromJson(provider, Provider.class));
+				}
+			}
+		} catch (SQLException e) {
+			System.err.print("SQL Error : ");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) conn.close();
+				if (stmt != null) stmt.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e){
+				System.err.print("SQL Error : ");
+				e.printStackTrace();
+			}
+		}
+		return userData;
+	}
 }
