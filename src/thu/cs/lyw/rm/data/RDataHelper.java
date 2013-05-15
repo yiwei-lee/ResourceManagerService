@@ -14,6 +14,7 @@ import thu.cs.lyw.rm.manager.RManager;
 import thu.cs.lyw.rm.service.RManagerServiceContext;
 import thu.cs.lyw.rm.util.Provider;
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class RDataHelper {
 	private static final String DRIVER = "com.mysql.jdbc.Driver"; 
@@ -98,6 +99,16 @@ public class RDataHelper {
 	public static JSONObject toJson(Object object){
 		if (gson == null) gson = new Gson();
 		String json = gson.toJson(object);
+		try {
+			return new JSONObject(json);
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	public static JSONObject toJsonWithAnnotation(Object object) {
+		Gson gson2 = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		String json = gson2.toJson(object);
 		try {
 			return new JSONObject(json);
 		} catch (JSONException e) {

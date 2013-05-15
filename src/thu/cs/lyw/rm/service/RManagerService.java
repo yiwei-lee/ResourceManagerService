@@ -59,7 +59,7 @@ public class RManagerService {
 		}
 		RTask task = RDataHelper.fromJson(json.toString(), RTask.class);
 		RNode node = manager.getNode(task);
-		return RDataHelper.toJson(node);
+		return RDataHelper.toJsonWithAnnotation(node);
 	}
 	@Path("/node/{uid}")
 	@GET

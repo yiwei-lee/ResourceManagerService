@@ -1,12 +1,15 @@
 package thu.cs.lyw.rm.resource;
 
 import java.util.HashMap;
+
+import com.google.gson.annotations.Expose;
+
 import thu.cs.lyw.rm.util.Provider;
 
 public class RNode {
-	private String IP;
-	private String status;
-	private HashMap<String, Object> properties;
+	@Expose private String IP;
+	@Expose private String status;
+	@Expose private HashMap<String, Object> properties;
 	private Provider provider;
 	public RNode(Provider provider){
 		this.provider = provider;
