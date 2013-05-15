@@ -5,22 +5,24 @@ import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.ec2.AmazonEC2;
 import com.amazonaws.services.ec2.AmazonEC2Client;
-//import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
-import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
-import com.amazonaws.services.ec2.model.CreateKeyPairResult;
-//import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
 import com.amazonaws.services.ec2.model.DescribeInstanceStatusRequest;
 import com.amazonaws.services.ec2.model.DescribeInstanceStatusResult;
 import com.amazonaws.services.ec2.model.DescribeInstancesRequest;
 import com.amazonaws.services.ec2.model.DescribeInstancesResult;
-//import com.amazonaws.services.ec2.model.IpPermission;
-import com.amazonaws.services.ec2.model.KeyPair;
 import com.amazonaws.services.ec2.model.RunInstancesRequest;
 import com.amazonaws.services.ec2.model.RunInstancesResult;
 import com.amazonaws.services.ec2.model.TerminateInstancesRequest;
 import thu.cs.lyw.rm.evaluation.REvaluation;
 import thu.cs.lyw.rm.resource.RNode;
 import thu.cs.lyw.rm.util.Provider;
+//import com.amazonaws.services.ec2.model.CreateKeyPairRequest;
+//import com.amazonaws.services.ec2.model.CreateKeyPairResult;
+//import com.amazonaws.services.ec2.model.InstanceStatus;
+//import com.amazonaws.services.ec2.model.KeyPair;
+//import java.util.List;
+//import com.amazonaws.services.ec2.model.AuthorizeSecurityGroupIngressRequest;
+//import com.amazonaws.services.ec2.model.CreateSecurityGroupRequest;
+//import com.amazonaws.services.ec2.model.IpPermission;
 
 public class EC2Adapter extends RAdapter {
 	@Override
@@ -54,20 +56,20 @@ public class EC2Adapter extends RAdapter {
 //			}catch(AmazonServiceException ase){
 //				System.out.println(ase.getMessage());
 //			}
-			CreateKeyPairRequest createKeyPairRequest = 
-					new CreateKeyPairRequest();
-			createKeyPairRequest.withKeyName("rm-test");
-			String privateKey = null;
-			try{
-				CreateKeyPairResult createKeyPairResult = ec2.createKeyPair(createKeyPairRequest);
-				KeyPair keyPair = new KeyPair();
-		    	keyPair = createKeyPairResult.getKeyPair();	
-				privateKey = keyPair.getKeyMaterial();
-			}catch(AmazonServiceException ase){
-				System.out.println("EC2 : "+ase.getMessage());
-			}
+//			CreateKeyPairRequest createKeyPairRequest = 
+//					new CreateKeyPairRequest();
+//			createKeyPairRequest.withKeyName("rm-test");
+//			String privateKey = null;
+//			try{
+//				CreateKeyPairResult createKeyPairResult = ec2.createKeyPair(createKeyPairRequest);
+//				KeyPair keyPair = new KeyPair();
+//		    	keyPair = createKeyPairResult.getKeyPair();	
+//				privateKey = keyPair.getKeyMaterial();
+//			}catch(AmazonServiceException ase){
+//				System.out.println("EC2 : "+ase.getMessage());
+//			}
+//			provider.addProperty("privateKey", privateKey);
 			provider.addProperty("AmazonEC2", ec2);
-			provider.addProperty("privateKey", privateKey);
 		} catch (AmazonServiceException ase) {
 			System.out.println("Caught Exception: " + ase.getMessage());
 			System.out.println("Reponse Status Code: " + ase.getStatusCode());
@@ -89,11 +91,19 @@ public class EC2Adapter extends RAdapter {
 		AmazonEC2 ec2 = (AmazonEC2)provider.getProperty("AmazonEC2");
 		RunInstancesResult runInstancesResult = ec2.runInstances(runInstancesRequest);
 		String instanceId = runInstancesResult.getReservation().getInstances().get(0).getInstanceId();
-		DescribeInstanceStatusRequest discribeStatusRequest = new DescribeInstanceStatusRequest().withInstanceIds(instanceId);
-		DescribeInstanceStatusResult describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
-		System.out.println("EC2 : Current state of the newly created instance is : '" + 
-				describeStatusResult.getInstanceStatuses().get(0).getInstanceState().getName() + "'.");
-		node.setIP(null);
+//		DescribeInstanceStatusRequest discribeStatusRequest = new DescribeInstanceStatusRequest().withInstanceIds(instanceId);
+//		DescribeInstanceStatusResult describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
+//		List<InstanceStatus> status = describeStatusResult.getInstanceStatuses();
+//		while (status.size() < 1) { 
+//			try {
+//				Thread.sleep(1000);
+//			} catch (InterruptedException e) {
+//				e.printStackTrace();
+//			}
+//			describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
+//			status = describeStatusResult.getInstanceStatuses();
+//		}
+		System.out.println("EC2 : Building server.");
 		node.addProperty("instanceId", instanceId);
 		return node;
 	}
@@ -113,6 +123,14 @@ public class EC2Adapter extends RAdapter {
 		String instanceId = (String) node.getProperty("instanceId");
 		DescribeInstanceStatusRequest discribeStatusRequest = new DescribeInstanceStatusRequest().withInstanceIds(instanceId);
 		DescribeInstanceStatusResult describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
+		while (describeStatusResult.getInstanceStatuses().size() < 1) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
+		}
 		status = describeStatusResult.getInstanceStatuses().get(0).getInstanceState().getName();
 		if (status.equals("running")){
 			DescribeInstancesRequest discribeInstanceRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);

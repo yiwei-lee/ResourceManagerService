@@ -64,8 +64,7 @@ public class RManagerService {
 	@Path("/node/{uid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public JSONObject getNodes(JSONObject json, @PathParam("uid") String uid){
-		//TODO
-		return null;
+	public JSONObject getNodes(@PathParam("uid") String uid){
+		return RDataHelper.getNodes(uid);
 	}
 }

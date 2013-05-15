@@ -6,7 +6,6 @@ public class Provider {
 	private boolean isInit;
 	private ProviderType providerType;
 	private HashMap<String, Object> properties;
-	
 	public Provider (ProviderType providerType){
 		this.providerType = providerType;
 		properties = new HashMap<String, Object>();

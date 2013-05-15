@@ -5,11 +5,13 @@ import thu.cs.lyw.rm.util.Provider;
 
 public class RNode {
 	private String IP;
+	private String status;
 	private HashMap<String, Object> properties;
 	private Provider provider;
-	private String status;
 	public RNode(Provider provider){
 		this.provider = provider;
+		status = "unknown";
+		IP = "unknown";
 		properties = new HashMap<String, Object>();
 	}
 	public void setIP(String IP){
