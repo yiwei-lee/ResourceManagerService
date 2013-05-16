@@ -9,13 +9,13 @@ import thu.cs.lyw.rm.util.Provider;
 public class RNode {
 	@Expose private String IP;
 	@Expose private String status;
-	@Expose private HashMap<String, Object> properties;
-	private Provider provider;
+	@Expose private Provider provider;
+	@Expose private HashMap<String, String> properties;
 	public RNode(Provider provider){
 		this.provider = provider;
 		status = "unknown";
 		IP = "unknown";
-		properties = new HashMap<String, Object>();
+		properties = new HashMap<String, String>();
 	}
 	public void setIP(String IP){
 		this.IP = IP;
@@ -26,7 +26,10 @@ public class RNode {
 	public Provider getProvider(){
 		return provider;
 	}
-	public void addProperty(String key, Object value){
+	public void setProvider(Provider provider){
+		this.provider = provider;
+	}
+	public void addProperty(String key, String value){
 		properties.put(key, value);
 	}
 	public Object getProperty(String key){

@@ -132,6 +132,7 @@ public class EC2Adapter extends RAdapter {
 			describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
 		}
 		status = describeStatusResult.getInstanceStatuses().get(0).getInstanceState().getName();
+		node.setStatus(status);
 		if (status.equals("running")){
 			DescribeInstancesRequest discribeInstanceRequest = new DescribeInstancesRequest().withInstanceIds(instanceId);
 			DescribeInstancesResult describeInstanceStatusResult = ec2.describeInstances(discribeInstanceRequest);

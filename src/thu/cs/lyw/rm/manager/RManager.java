@@ -59,4 +59,7 @@ public class RManager {
 	public void releaseNode(RNode node) {
 		resourcePool.releaseNode(node);
 	}
+	public RNode checkNodeStatus(RNode node){
+		return resourcePool.checkNodeStatus(node);
+	}
 }

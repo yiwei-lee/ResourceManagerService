@@ -232,6 +232,65 @@ public class RDataHelper {
 		}
 		return json;
 	}
+	public static JSONObject getNode(String uid, String nid){
+		JSONObject json = null;
+		String node = null;
+		try {
+			rs = executeQuery("select data from node where Id = " + nid);
+			if (rs.next()){
+				node = rs.getString(1);
+			}
+			assert(node != null);
+			json = new JSONObject(node);
+		} catch (SQLException e) {
+			System.err.print("SQL Error : ");
+			e.printStackTrace();
+		} catch (JSONException e) {
+			System.err.print("JSON Error : ");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) conn.close();
+				if (stmt != null) stmt.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e){
+				System.err.print("SQL Error : ");
+				e.printStackTrace();
+			}
+		}
+		return json;
+	}
+	public static JSONObject getNodeProvider(String uid, String nid){
+		JSONObject json = null;
+		String provider = null;
+		try {
+			rs = executeQuery("select providerId from node where Id = " + nid);
+			if (rs.next()){
+				provider = rs.getString(1);
+			}
+			rs = executeQuery("select data from provider where Id = " + provider);
+			if (rs.next()){
+				provider = rs.getString(1);
+			}
+			json = new JSONObject(provider);
+		} catch (SQLException e) {
+			System.err.print("SQL Error : ");
+			e.printStackTrace();
+		} catch (JSONException e) {
+			System.err.print("JSON Error : ");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) conn.close();
+				if (stmt != null) stmt.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e){
+				System.err.print("SQL Error : ");
+				e.printStackTrace();
+			}
+		}
+		return json;
+	}
 	//Functions for initialization;
 	public static HashMap<String, RManager> loadUserData(){
 		HashMap<String, RManager> userData = new HashMap<String, RManager>();

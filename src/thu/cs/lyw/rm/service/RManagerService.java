@@ -61,10 +61,26 @@ public class RManagerService {
 		RNode node = manager.getNode(task);
 		return RDataHelper.toJsonWithAnnotation(node);
 	}
+	@Path("/node/{uid}/{nid}")
+	@DELETE
+	public void releaseNode(@PathParam("uid") String uid, @PathParam("nid") String nid){
+		RManager manager = RManagerServiceContext.managerMap.get(uid);
+		RNode node = RDataHelper.fromJson(RDataHelper.getNode(uid, nid).toString(), RNode.class);
+		manager.releaseNode(node);
+	}
 	@Path("/node/{uid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public JSONObject getNodes(@PathParam("uid") String uid){
 		return RDataHelper.getNodes(uid);
+	}
+	@Path("/node/{uid}/{nid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public JSONObject getNode(@PathParam("uid") String uid, @PathParam("nid") String nid){
+		RManager manager = RManagerServiceContext.managerMap.get(uid);
+		RNode node = RDataHelper.fromJson(RDataHelper.getNode(uid, nid).toString(), RNode.class);
+		manager.checkNodeStatus(node);
+		return RDataHelper.toJsonWithAnnotation(node);
 	}
 }

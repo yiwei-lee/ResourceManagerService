@@ -146,6 +146,7 @@ public class OpenStackAdapter extends RAdapter{
 		String serverId = (String) node.getProperty("serverId");
 		try {
 			status = getServerStatus(token, header, serverId);
+			node.setStatus(status);
 			if (status.equals("ACTIVE")){
 				webResource = client.resource(header + "/servers/"+serverId+"/ips");
 				ClientResponse response = webResource.type("application/json").accept("application/json").header("X-Auth-Token", token)
