@@ -1,5 +1,11 @@
 package thu.cs.lyw.rm.service;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import com.google.gson.Gson;
@@ -15,7 +21,7 @@ import thu.cs.lyw.rm.util.ProviderType;
 
 @SuppressWarnings("unused")
 public class RManagerServiceTest {
-	public static void main(String[] args) throws JSONException {
+	public static void main(String[] args) throws JSONException, NoSuchAlgorithmException {
 		Client client = Client.create();
 		WebResource webResource;
 		Provider ec2Provider = new Provider(ProviderType.EC2);
@@ -30,6 +36,9 @@ public class RManagerServiceTest {
 		node.addProperty("instanceId", "i-9999999");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		System.out.println(new JSONObject(gson.toJson(ec2Provider)).toString(4));
+		MessageDigest md5 = MessageDigest.getInstance("MD5");
+		String email = new HexBinaryAdapter().marshal(md5.digest("lywthu@yeah.net".getBytes()));
+		System.out.println(email);
 //		System.out.println(new JSONObject(gson.toJson(node)).toString(4));
 //		System.out.println(gson.toJson(openStackProvider));
 //		RTask task1 = new RTask(ProviderType.OpenStack, "84536", "MICRO");

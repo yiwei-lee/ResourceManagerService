@@ -94,9 +94,9 @@ public class OpenStackAdapter extends RAdapter{
 		String flavor = "100";
 		if (evaluation.type == NodeType.MICRO) flavor = "100";
 		try {
-			String hexedDate = new HexBinaryAdapter().marshal(md5.digest(new Date().toString().getBytes()));
+			String hashedDate = new HexBinaryAdapter().marshal(md5.digest(new Date().toString().getBytes()));
 			JSONObject json = new JSONObject().put("server", new JSONObject()
-					.put("flavorRef", flavor).put("imageRef", evaluation.image.getImageName()).put("name", "server-" + hexedDate)
+					.put("flavorRef", flavor).put("imageRef", evaluation.image.getImageName()).put("name", "server-" + hashedDate)
 					.put("min_count", "1").put("max_count", "1")
 					.put("key_name", evaluation.task.keyName));
 //					.put("security_groups",new JSONArray().put(new JSONObject().put("name", evaluation.task.securityGroup))));
