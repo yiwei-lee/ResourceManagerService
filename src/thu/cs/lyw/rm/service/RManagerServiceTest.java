@@ -35,8 +35,11 @@ public class RManagerServiceTest {
 		RNode node = new RNode(ec2Provider);
 		node.addProperty("instanceId", "i-9999999");
 		Gson gson = new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
-		System.out.println(new JSONObject(gson.toJson(ec2Provider)).toString(4));
+		Gson gson2 = new Gson();
 		MessageDigest md5 = MessageDigest.getInstance("MD5");
+		RTask task1 = new RTask(ProviderType.OpenStack, "84536", "MICRO");
+		RTask task2 = new RTask(ProviderType.EC2, "ami-56e6a404", "MICRO");
+		System.out.println(new JSONObject(gson2.toJson(task2)).toString(4));
 		String email = new HexBinaryAdapter().marshal(md5.digest("lywthu@yeah.net".getBytes()));
 		System.out.println(email);
 //		System.out.println(new JSONObject(gson.toJson(node)).toString(4));

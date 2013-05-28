@@ -139,7 +139,6 @@ public class OpenStackAdapter extends RAdapter{
 	}
 	@Override
 	public String checkStatus(RNode node) {
-		// TODO Auto-generated method stub
 		String status = "unknown";
 		String token = (String) node.getProvider().getProperty("token");
 		String header = (String) node.getProvider().getProperty("header");
