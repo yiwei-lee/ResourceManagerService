@@ -223,7 +223,7 @@ public class RDataHelper {
 			}
 			pstmt.setString(1, id);
 			pstmt.setString(2, uid);
-			pstmt.setString(3, provider.toString());
+			pstmt.setString(3, json.toString());
 			pstmt.executeUpdate();
 			RManager manager = RManagerServiceContext.managerMap.get(uid);
 			if (manager == null){
@@ -244,6 +244,7 @@ public class RDataHelper {
 				e.printStackTrace();
 			}
 		}
+		return toJson("Failed to create node.");
 	}
 	public static void releaseNode(String uid, String nid){
 		return;
