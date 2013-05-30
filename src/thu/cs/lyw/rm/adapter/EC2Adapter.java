@@ -125,7 +125,7 @@ public class EC2Adapter extends RAdapter {
 		DescribeInstanceStatusResult describeStatusResult = ec2.describeInstanceStatus(discribeStatusRequest);
 		while (describeStatusResult.getInstanceStatuses().size() < 1) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(256);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
