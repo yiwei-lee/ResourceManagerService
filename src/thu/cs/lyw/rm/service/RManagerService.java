@@ -39,12 +39,12 @@ public class RManagerService {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	public void updateProvider(JSONObject provider, @PathParam("uid") String uid, @PathParam("pid") String pid){
-		RDataHelper.executeUpdate("update provider set Data = " + provider.toString() + " where UserId = " + uid + " and Id = " + pid);
+		RDataHelper.executeUpdate("update provider set Data = " + provider.toString() + " where Id = " + pid + " and UserId = " + uid);
 	}
 	@Path("/provider/{uid}/{pid}")
 	@DELETE
 	public void delProvider(@PathParam("uid") String uid, @PathParam("pid") String pid){
-		RDataHelper.executeUpdate("delete from provider where UserId = " + uid + " and Id = " + pid);
+		RDataHelper.executeUpdate("delete from provider where Id = " + pid + " and UserId = " + uid);
 	}
 	
 	//RNode-specific resources;

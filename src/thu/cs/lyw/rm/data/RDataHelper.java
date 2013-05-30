@@ -11,8 +11,12 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 import thu.cs.lyw.rm.manager.RManager;
+import thu.cs.lyw.rm.manager.RTask;
+import thu.cs.lyw.rm.resource.RNode;
 import thu.cs.lyw.rm.service.RManagerServiceContext;
 import thu.cs.lyw.rm.util.Provider;
+import thu.cs.lyw.rm.util.RStringGenerator;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -125,9 +129,14 @@ public class RDataHelper {
 	public static void addProvider(String uid, JSONObject provider){
 		try {
 			conn = getConnection();
-			pstmt = conn.prepareStatement("insert into provider(UserId, Data) values(?, ?)");
-			pstmt.setString(1, uid);
-			pstmt.setString(2, provider.toString());
+			pstmt = conn.prepareStatement("insert into provider(Id, UserId, Data) values(?, ?, ?)");
+			String id = "p-"+RStringGenerator.getString(8);
+			while (isExist(id, "provider")){
+				id = "p-"+RStringGenerator.getString(8);
+			}
+			pstmt.setString(1, id);
+			pstmt.setString(2, uid);
+			pstmt.setString(3, provider.toString());
 			pstmt.executeUpdate();
 			RManager manager = RManagerServiceContext.managerMap.get(uid);
 			if (manager == null) manager = new RManager(uid);
@@ -149,11 +158,12 @@ public class RDataHelper {
 		JSONObject json = null;
 		String provider = null;
 		try {
-			rs = executeQuery("select data from provider where UserId = " + uid + " and Id = " + pid);
+			rs = executeQuery("select data from provider where Id = " + pid + " and UserId = " + uid);
 			if (rs.next()){
 				provider = rs.getString(1);
+			} else {
+				provider = "User: " + uid +"has no provider with id : " + pid;
 			}
-			assert(provider != null);
 			json = new JSONObject(provider);
 		} catch (SQLException e) {
 			System.err.print("SQL Error : ");
@@ -203,6 +213,41 @@ public class RDataHelper {
 		return json;
 	}
 	//RNode-specific functions;
+	public static JSONObject createNode(String uid, JSONObject json){
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement("insert into node(Id, UserId, Data) values(?, ?, ?)");
+			String id = "n-" + RStringGenerator.getString(8);
+			while (isExist(id, "node")){
+				id = "n-" + RStringGenerator.getString(8);
+			}
+			pstmt.setString(1, id);
+			pstmt.setString(2, uid);
+			pstmt.setString(3, provider.toString());
+			pstmt.executeUpdate();
+			RManager manager = RManagerServiceContext.managerMap.get(uid);
+			if (manager == null){
+				return RDataHelper.toJson("No provider added for user with user id "+uid);
+			}
+			RTask task = RDataHelper.fromJson(json.toString(), RTask.class);
+			RNode node = manager.getNode(task);
+			return RDataHelper.toJsonWithAnnotation(node);
+		} catch (SQLException e) {
+			System.err.print("SQL Error : ");
+			e.printStackTrace();
+		} finally {
+			try {
+				if (pstmt != null) pstmt.close();
+				if (conn != null) conn.close();
+			} catch (SQLException e){
+				System.err.print("SQL Error : ");
+				e.printStackTrace();
+			}
+		}
+	}
+	public static void releaseNode(String uid, String nid){
+		return;
+	}
 	public static JSONObject getNodes(String uid){
 		JSONObject json = null;
 		StringBuilder list = new StringBuilder();
@@ -236,7 +281,7 @@ public class RDataHelper {
 		JSONObject json = null;
 		String node = null;
 		try {
-			rs = executeQuery("select data from node where Id = " + nid);
+			rs = executeQuery("select data from node where Id = " + nid + " and UserId = " + uid);
 			if (rs.next()){
 				node = rs.getString(1);
 			}
@@ -324,5 +369,26 @@ public class RDataHelper {
 			}
 		}
 		return userData;
+	}
+	//Utilities;
+	private static boolean isExist(String id, String tableName){
+		boolean isExist = false;
+		String query = "select * from " + tableName + "where Id = " + id;
+		try {
+			rs = executeQuery(query);
+			if (rs.next() == false) isExist = true;
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (conn != null) conn.close();
+				if (stmt != null) stmt.close();
+				if (rs != null) rs.close();
+			} catch (SQLException e){
+				System.err.print("SQL Error : ");
+				e.printStackTrace();
+			}
+		}
+		return isExist;
 	}
 }
